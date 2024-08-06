@@ -1,11 +1,12 @@
 package com.yupi.springbootinit.model.dto.chart;
 
+
 import com.yupi.springbootinit.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.List;
+
 
 /**
  * 查询请求
@@ -17,50 +18,25 @@ import java.util.List;
 @Data
 public class ChartQueryRequest extends PageRequest implements Serializable {
 
+
     /**
      * id
      */
     private Long id;
 
     /**
-     * id
+     * 分析目标
      */
-    private Long notId;
+    private String goal;
+
 
     /**
-     * 搜索词
+     * 图表类型
      */
-    private String searchText;
+    private String chartType;
 
-    /**
-     * 标题
-     */
-    private String title;
-
-    /**
-     * 内容
-     */
-    private String content;
-
-    /**
-     * 标签列表
-     */
-    private List<String> tags;
-
-    /**
-     * 至少有一个标签
-     */
-    private List<String> orTags;
-
-    /**
-     * 创建用户 id
-     */
     private Long userId;
 
-    /**
-     * 收藏用户 id
-     */
-    private Long favourUserId;
 
     private static final long serialVersionUID = 1L;
 }

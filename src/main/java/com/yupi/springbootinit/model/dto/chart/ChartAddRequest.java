@@ -3,7 +3,7 @@ package com.yupi.springbootinit.model.dto.chart;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
+
 
 /**
  * 创建请求
@@ -14,20 +14,24 @@ import java.util.List;
 @Data
 public class ChartAddRequest implements Serializable {
 
-    /**
-     * 标题
-     */
-    private String title;
+
 
     /**
-     * 内容
+     * 分析目标
      */
-    private String content;
+    private String goal;
 
     /**
-     * 标签列表
+     * 图表数据
      */
-    private List<String> tags;
+    private String chartData;
+
+    /**
+     * 图表类型
+     */
+    private String chartType;
+
+
 
     private static final long serialVersionUID = 1L;
 }
