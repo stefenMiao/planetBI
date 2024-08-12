@@ -10,4 +10,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ChartService extends IService<Chart> {
 
+    String buildUserInput(String goal, String chartType, String csvData);
+
+    void handleChartUpdateError(long chartId, String execMessage);
 }

@@ -66,17 +66,20 @@ public class BiMessageConsumer {
         boolean b = chartService.updateById(updateChart);
         if (!b) {
             channel.basicNack(deliveryTag, false, false);
-            handleChartUpdateError(chart.getId(), "更新图表状态为running时失败");
+            chartService.handleChartUpdateError(chart.getId(), "更新图表状态为running时失败");
             return;
         }
+        String goal=chart.getGoal();
+        String chartType=chart.getChartType();
+        String csvData=chart.getChartData();
+        String userInput=chartService.buildUserInput(goal, chartType, csvData);
 
 
-//            String result = aiManager.doChat(biModelId, userInput.toString());
-        String result = aiManagerSpark.sendMesToAIUseXingHuo(buildUserInput(chart));
+        String result = aiManagerSpark.sendMesToAIUseXingHuo(userInput);
         String[] splits = result.split("【【【【【");
         if (splits.length < 3) {
             channel.basicNack(deliveryTag, false, false);
-            handleChartUpdateError(chart.getId(), "AI生成错误");
+            chartService.handleChartUpdateError(chart.getId(), "AI生成错误");
             return;
         }
         String genChart = splits[1].trim();
@@ -97,51 +100,11 @@ public class BiMessageConsumer {
         boolean updateResult = chartService.updateById(updateChartResult);
         if (!updateResult) {
             channel.basicNack(deliveryTag, false, false);
-            handleChartUpdateError(chart.getId(), "更新图表状态为succeed时失败");
+            chartService.handleChartUpdateError(chart.getId(), "更新图表状态为succeed时失败");
         }
 
         channel.basicAck(deliveryTag, false);
     }
 
-
-
-    private void handleChartUpdateError(long chartId, String execMessage) {
-        // 创建一个表示更新失败的图表对象
-        Chart updateChartResult = new Chart();
-        updateChartResult.setId(chartId);
-        updateChartResult.setStatus("failed");
-        updateChartResult.setExecMessage("execMessage");
-
-        // 尝试更新图表的状态
-        boolean updateResult = chartService.updateById(updateChartResult);
-
-        // 如果更新操作失败，则记录错误日志
-        if (!updateResult) {
-            log.error("更新图表失败 updateChartResult={}", updateChartResult);
-        }
-    }
-
-    /**
-     * 构建用户输入
-     * @param chart
-     * @return
-     */
-    private String buildUserInput(Chart chart) {
-        String goal=chart.getGoal();
-        String chartType=chart.getChartType();
-        String csvData=chart.getChartData();
-        //用户输入
-        StringBuilder userInput = new StringBuilder();
-        userInput.append("分析需求").append("\n");
-        //拼接要分析的图表类型
-        String userGoal = goal;
-        if (StringUtils.isNotBlank(chartType)) {
-            userGoal = goal + "，请使用" + chartType;
-        }
-        userInput.append(userGoal).append("\n");
-        userInput.append("原始数据：").append("\n");
-        userInput.append(csvData).append("\n");
-        return userInput.toString();
-    }
 }
 
